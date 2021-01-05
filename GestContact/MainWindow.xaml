@@ -4,13 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="900" ResizeMode="CanMinimize" DataContext="{StaticResource Contacts}">
+        Title="MainWindow" Height="450" Width="900" ResizeMode="CanMinimize" DataContext="{Binding Source={StaticResource Locator}, Path=Contacts}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AutoGenerateColumns="False" AlternatingRowBackground="LightBlue">
+        <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" AutoGenerateColumns="False">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="LightBlue" />
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="LastName" Binding="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" />
                 <DataGridTextColumn Header="FirstName" Binding="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />

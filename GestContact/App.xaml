@@ -2,9 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:GestContact"
-             xmlns:vm="clr-namespace:GestContact.ViewModels;assembly=GestContact.ViewModels"
+             xmlns:vm="clr-namespace:GestContact.ViewModels"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <vm:ContactsViewModel x:Key="Contacts" />
+        <vm:ViewModelLocator x:Key="Locator"/>
     </Application.Resources>
 </Application>

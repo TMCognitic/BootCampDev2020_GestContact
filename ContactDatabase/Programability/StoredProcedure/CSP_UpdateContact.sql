@@ -4,7 +4,8 @@
     @FirstName NVARCHAR(75), 
     @Email NVARCHAR(320), 
     @Phone NVARCHAR(20), 
-    @BirthDate DATE
+    @BirthDate DATE,
+    @CustomerId INT
 AS
 BEGIN
 	UPDATE Contact 
@@ -13,5 +14,5 @@ BEGIN
         Email = @Email, 
         Phone = @Phone, 
         BirthDate = @BirthDate 
-    WHERE Id = @Id;
+    WHERE Id = @Id And CustomerId = @CustomerId;
 END

@@ -3,10 +3,11 @@
     @FirstName NVARCHAR(75), 
     @Email NVARCHAR(320), 
     @Phone NVARCHAR(20), 
-    @BirthDate DATE
+    @BirthDate DATE,
+    @CustomerId INT
 AS
 BEGIN
-	INSERT INTO Contact (LastName, FirstName, Email, Phone, BirthDate) 
+	INSERT INTO Contact (LastName, FirstName, Email, Phone, BirthDate, CustomerId) 
     OUTPUT inserted.Id
-    VALUES (@LastName, @FirstName, @Email, @Phone, @BirthDate);
+    VALUES (@LastName, @FirstName, @Email, @Phone, @BirthDate, @CustomerId);
 END

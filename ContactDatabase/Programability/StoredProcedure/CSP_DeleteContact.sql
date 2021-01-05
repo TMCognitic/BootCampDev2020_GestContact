@@ -1,7 +1,8 @@
 ﻿CREATE PROCEDURE [dbo].[CSP_DeleteContact]
-	@Id INT
+	@Id INT,
+	@CustomerId INT
 AS
 BEGIN
 	DELETE FROM Contact
-	WHERE Id = @Id;
+	WHERE Id = @Id And CustomerId = @CustomerId;
 END
