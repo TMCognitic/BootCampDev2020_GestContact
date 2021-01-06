@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GestContact.MVC.Inftrastructure;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace GestContact.MVC.Models.Forms
         public string Phone { get; set; }
         [Required]
         [DataType(DataType.Date)]
+        [CheckEmail]
         public DateTime BirthDate { get; set; }
     }
 }

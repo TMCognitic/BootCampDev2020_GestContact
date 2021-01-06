@@ -1,13 +1,17 @@
+using GestContact.MVC.Inftrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Tools.Connections.Database;
 
 namespace GestContact.MVC
 {
@@ -27,12 +31,17 @@ namespace GestContact.MVC
 
             services.AddDistributedMemoryCache();
 
+            services.AddHttpContextAccessor();
+
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(3600);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            services.AddScoped<ISessionManager, SessionManager>();
+            services.AddSingleton<IConnection>(sp => new Connection(SqlClientFactory.Instance, @"Data Source=VM-COREWIN\SQL2014DEV;Initial Catalog=GestContact;Integrated Security=True;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +59,7 @@ namespace GestContact.MVC
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+           
             app.UseRouting();
             app.UseSession();
 

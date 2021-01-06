@@ -1,6 +1,9 @@
-﻿using GestContact.MVC.Models.Forms;
+﻿using GestContact.MVC.Inftrastructure;
+using GestContact.MVC.Models;
+using GestContact.MVC.Models.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,11 +16,15 @@ namespace GestContact.MVC.Controllers
     public class AuthController : Controller
     {
         private readonly IConnection _connection;
-        public AuthController()
-        {
-            _connection = new Connection(SqlClientFactory.Instance, @"Data Source=VM-COREWIN\SQL2014DEV;Initial Catalog=GestContact;Integrated Security=True;"); ;
-        }
+        private readonly ISessionManager _sessionManager;
+        private readonly ILogger _logger;
 
+        public AuthController(IConnection connection, ISessionManager sessionManager, ILogger<AuthController> logger)
+        {           
+            _connection = connection;
+            _sessionManager = sessionManager;
+            _logger = logger;
+        }
 
         [HttpGet]
         public IActionResult Index()
@@ -28,6 +35,7 @@ namespace GestContact.MVC.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            ViewBag.HashCode = _connection.GetHashCode();
             return View();
         }
 
@@ -41,13 +49,11 @@ namespace GestContact.MVC.Controllers
                     Command command = new Command("CSP_CheckCustomer", true);
                     command.AddParameter("Email", form.Email);
                     command.AddParameter("Passwd", form.Passwd);
-                    var customer = _connection.ExecuteReader(command, (dr) => new { Id = (int)dr["Id"], LastName = (string)dr["LastName"], FirstName = (string)dr["FirstName"] }).SingleOrDefault();
+                    Customer customer = _connection.ExecuteReader(command, (dr) => new Customer { Id = (int)dr["Id"], LastName = (string)dr["LastName"], FirstName = (string)dr["FirstName"] }).SingleOrDefault();
 
                     if(customer is not null)
                     {
-                        HttpContext.Session.SetInt32("Id", customer.Id);
-                        HttpContext.Session.SetString("LastName", customer.LastName);
-                        HttpContext.Session.SetString("FirstName", customer.FirstName);
+                        _sessionManager.Customer = customer;
                         return RedirectToAction("Index", "Contact");
                     }
 
@@ -56,7 +62,8 @@ namespace GestContact.MVC.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                _logger.LogError(ex.Message);
+                ModelState.AddModelError("", "Une erreur est survenue");
                 //ViewBag.Error = ex.Message;
             }
 
@@ -66,6 +73,7 @@ namespace GestContact.MVC.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            ViewBag.HashCode = _connection.GetHashCode();
             return View();
         }
 
@@ -97,13 +105,9 @@ namespace GestContact.MVC.Controllers
         }
 
         [HttpGet]
+        [AuthRequired]
         public IActionResult Logout()
         {
-            if (!HttpContext.Session.GetInt32("Id").HasValue)
-            {
-                return RedirectToAction("Login");
-            }
-
             HttpContext.Session.Clear();
             return RedirectToAction("Index", "Home");
         }
